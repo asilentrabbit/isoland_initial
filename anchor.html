@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>跨越时间的信 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 28px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      border: 1px solid #eee;
+    }
+
+    .section-label {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      margin-bottom: 14px;
+    }
+
+    .input-area {
+      width: 100%;
+      padding: 14px;
+      font-size: 14px;
+      color: #333;
+      background: #fafafa;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-area:focus {
+      border-color: #9e9e9e;
+    }
+
+    .input-area::placeholder {
+      color: #ccc;
+    }
+
+    .btn-submit {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 0;
+      font-size: 14px;
+      color: #fff;
+      background: #9e9e9e;
+      border: none;
+      border-radius: 28px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-submit:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-submit:disabled {
+      background: #d0d0d0;
+      color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .history-title {
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      margin-bottom: 14px;
+    }
+
+    .history-empty {
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+      padding: 24px 0;
+      letter-spacing: 0.03em;
+    }
+
+    .record-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+      border: 1px solid #eee;
+    }
+
+    .record-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .record-date {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.02em;
+    }
+
+    .record-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .record-level.green {
+      background: #e8f0e8;
+      color: #7a9a7a;
+    }
+
+    .record-level.yellow {
+      background: #f0ece0;
+      color: #b0a070;
+    }
+
+    .record-level.red {
+      background: #f0e6e6;
+      color: #b08080;
+    }
+
+    .record-level.unknown {
+      background: #f0f0f0;
+      color: #999;
+    }
+
+    .level-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .level-dot.green { background: #7a9a7a; }
+    .level-dot.yellow { background: #b0a070; }
+    .level-dot.red { background: #b08080; }
+    .level-dot.unknown { background: #b0b0b0; }
+
+    .record-scenario {
+      font-size: 12px;
+      color: #bbb;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+
+    .record-content {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .record-delete {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 12px;
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .record-delete:hover { color: #888; }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      letter-spacing: 0.02em;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .bottom-link { text-align: center; margin-top: 32px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 20px 16px; border-radius: 14px; }
+      .header-title { font-size: 21px; }
+      .header-subtitle { font-size: 12px; }
+      .input-area { font-size: 13px; padding: 12px; }
+      .record-content { font-size: 13px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 26px; }
+      .header-subtitle { font-size: 14px; }
+      .card { padding: 28px 28px; }
+      .input-area { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a id="navBackLink" href="mainwindow.html">← 返回主页</a>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">跨越时间的信</h1>
+      <p class="header-subtitle">对未来的自己说句话</p>
+    </div>
+
+    <div class="card">
+      <div class="section-label">写下一段话</div>
+      <textarea class="input-area" id="inputArea" rows="6" placeholder="在此写下你想对未来的自己说的话……"></textarea>
+      <button type="button" class="btn-submit" id="btnSubmit">抛下这只锚</button>
+    </div>
+
+    <div class="section-label history-title">历史记录</div>
+    <div id="historyList"></div>
+    <div class="history-empty" id="historyEmpty">暂无记录。</div>
+
+    <div class="bottom-link">
+      <a href="mainwindow.html">返回主页</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var LEVEL_LABELS = { green: '状态良好', yellow: '状态偏高', red: '需要关注' };
+    var RELATION_NAMES = { L1: '至交好友', L2: '朋友', L3: '熟人/一般相识' };
+
+    var inputArea = document.getElementById('inputArea');
+    var btnSubmit = document.getElementById('btnSubmit');
+    var historyList = document.getElementById('historyList');
+    var historyEmpty = document.getElementById('historyEmpty');
+    var toast = document.getElementById('toast');
+    var navBackLink = document.getElementById('navBackLink');
+
+    function getURLParam(name) {
+      var search = window.location.search.substring(1);
+      if (!search) return '';
+      var pairs = search.split('&');
+      for (var i = 0; i < pairs.length; i++) {
+        var parts = pairs[i].split('=');
+        if (decodeURIComponent(parts[0]) === name) {
+          return decodeURIComponent(parts[1] || '');
+        }
+      }
+      return '';
+    }
+
+    var fromParam = getURLParam('from');
+    var relationshipParam = getURLParam('relationship');
+    var scenarioParam = getURLParam('scenario');
+    var questionIndexParam = getURLParam('question_index');
+
+    if (fromParam === 'archive') {
+      navBackLink.textContent = '← 返回信息录入';
+      navBackLink.href = 'javascript:void(0)';
+      navBackLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        history.back();
+      });
+    } else if (fromParam === 'behavior') {
+      navBackLink.textContent = '← 返回行为对照';
+      navBackLink.href = 'javascript:void(0)';
+      navBackLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        history.back();
+      });
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function getAssessmentLevel() {
+      try {
+        var data = localStorage.getItem('current_assessment');
+        if (!data) return '未评估';
+        var parsed = JSON.parse(data);
+        return parsed.level || '未评估';
+      } catch (e) {
+        return '未评估';
+      }
+    }
+
+    function formatDate(d) {
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function getRecords() {
+      try {
+        var data = localStorage.getItem('anchor_records');
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveRecords(records) {
+      localStorage.setItem('anchor_records', JSON.stringify(records));
+    }
+
+    function renderHistory() {
+      var records = getRecords();
+      historyList.innerHTML = '';
+
+      if (records.length === 0) {
+        historyEmpty.style.display = 'block';
+        return;
+      }
+
+      historyEmpty.style.display = 'none';
+
+      records.sort(function(a, b) { return b.id - a.id; });
+
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        var level = r.assessment_level || '未评估';
+        var levelText = LEVEL_LABELS[level] || '未评估';
+        var levelClass = LEVEL_LABELS[level] ? level : 'unknown';
+
+        var card = document.createElement('div');
+        card.className = 'record-card';
+
+        var dateStr = r.date + ' ' + r.time;
+
+        var html =
+          '<div class="record-meta">' +
+            '<span class="record-date">' + dateStr + '</span>' +
+            '<span class="record-level ' + levelClass + '">' +
+              '<span class="level-dot ' + levelClass + '"></span>' + levelText +
+            '</span>' +
+          '</div>';
+
+        if (r.scenario_label || r.relationship) {
+          var relName = RELATION_NAMES[r.relationship] || r.relationship || '';
+          html += '<div class="record-scenario">';
+          if (relName) html += '关系：' + relName;
+          if (r.scenario_label) {
+            if (relName) html += ' &nbsp;|&nbsp; ';
+            html += '情境：' + r.scenario_label;
+          }
+          html += '</div>';
+        }
+
+        html +=
+          '<div class="record-content">' + escapeHTML(r.content) + '</div>' +
+          '<button class="record-delete" data-id="' + r.id + '">删除</button>';
+
+        card.innerHTML = html;
+
+        card.querySelector('.record-delete').addEventListener('click', function(e) {
+          var id = parseInt(e.target.getAttribute('data-id'), 10);
+          if (confirm('确定要删除这条记录吗？')) {
+            deleteRecord(id);
+          }
+        });
+
+        historyList.appendChild(card);
+      }
+    }
+
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    function deleteRecord(id) {
+      var records = getRecords();
+      var filtered = [];
+      for (var i = 0; i < records.length; i++) {
+        if (records[i].id !== id) filtered.push(records[i]);
+      }
+      saveRecords(filtered);
+      renderHistory();
+    }
+
+    btnSubmit.addEventListener('click', function() {
+      var content = inputArea.value.trim();
+      if (!content) {
+        showToast('请写下你想说的话。');
+        return;
+      }
+
+      var now = new Date();
+      var record = {
+        id: now.getTime(),
+        date: formatDate(now),
+        time: String(now.getHours()).padStart(2, '0') + ':' +
+              String(now.getMinutes()).padStart(2, '0'),
+        content: content,
+        assessment_level: getAssessmentLevel(),
+        relationship: relationshipParam,
+        scenario_label: scenarioParam,
+        question_index: questionIndexParam ? parseInt(questionIndexParam, 10) : null
+      };
+
+      var records = getRecords();
+      records.push(record);
+      saveRecords(records);
+
+      inputArea.value = '';
+      renderHistory();
+      showToast('已抛下这只锚。');
+    });
+
+    renderHistory();
+  </script>
+</body>
+</html>

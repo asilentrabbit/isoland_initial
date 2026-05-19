@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>信息记录 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 28px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      filter: grayscale(0.3);
+      opacity: 0.5;
+      line-height: 1;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-label {
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+
+    .relation-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .relation-option {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .relation-option input[type="radio"] { display: none; }
+
+    .relation-label {
+      display: block;
+      text-align: center;
+      padding: 12px 8px;
+      background: #f5f5f5;
+      border-radius: 12px;
+      font-size: 14px;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .relation-label:hover { background: #eee; color: #666; }
+
+    .relation-label.completed {
+      background: #e8e8e8;
+      color: #999;
+      cursor: default;
+    }
+
+    .relation-label.completed:hover { background: #e8e8e8; color: #999; }
+
+    input[type="radio"]:checked + .relation-label {
+      background: #e0e0e0;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .relation-badge {
+      display: inline-block;
+      margin-left: 2px;
+      font-size: 11px;
+      color: #999;
+    }
+
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: #999;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 3px;
+      background: #e8e8e8;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #b0b0b0;
+      border-radius: 3px;
+      transition: width 0.35s ease;
+    }
+
+    .scenario-card { transition: opacity 0.25s ease; }
+
+    .scenario-title {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .question-label {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .range-wrapper { margin-bottom: 24px; }
+
+    .range-container {
+      position: relative;
+      height: 48px;
+      margin-bottom: 6px;
+    }
+
+    .range-track {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, #c8cfc8, #d8d8d8, #e8d0d0);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .range-highlight {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 8px;
+      background: rgba(140, 140, 140, 0.35);
+      border-radius: 4px;
+      pointer-events: none;
+      transition: left 0.15s ease, width 0.15s ease;
+    }
+
+    .range-input {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 48px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      pointer-events: none;
+      margin: 0;
+      z-index: 2;
+    }
+
+    .range-input.lower { z-index: 3; }
+
+    .range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #7a7a7a;
+      cursor: pointer;
+      pointer-events: all;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .range-input::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+      background: #555;
+    }
+
+    .range-input::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #7a7a7a;
+      cursor: pointer;
+      pointer-events: all;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .range-input::-moz-range-thumb:active {
+      transform: scale(1.15);
+      background: #555;
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #bbb;
+    }
+
+    .range-values {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .scenario-disabled .range-input::-webkit-slider-thumb {
+      background: #ccc;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .scenario-disabled .range-input::-moz-range-thumb {
+      background: #ccc;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .scenario-disabled .range-highlight { opacity: 0.3; }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-item { display: flex; align-items: flex-start; gap: 10px; }
+
+    .checkbox-item input[type="checkbox"] { display: none; }
+
+    .checkbox-box {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border-radius: 6px;
+      border: 2px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      margin-top: 1px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-box::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: transparent;
+      transition: background 0.25s ease;
+    }
+
+    input[type="checkbox"]:checked + .checkbox-box {
+      border-color: #9e9e9e;
+      background: #9e9e9e;
+    }
+
+    input[type="checkbox"]:checked + .checkbox-box::after {
+      background: #fff;
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .scenario-disabled .checkbox-box { cursor: not-allowed; opacity: 0.5; }
+    .scenario-disabled .checkbox-label { cursor: default; opacity: 0.5; }
+
+    .scenario-disabled .btn-message {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .checkbox-hint {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .message-area { margin-bottom: 20px; }
+
+    .btn-message {
+      display: block;
+      padding: 11px 0;
+      font-size: 13px;
+      color: #777;
+      background: #fafafa;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 28px;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-message:hover {
+      background: #f0f0f0;
+      border-color: #c0c0c0;
+      color: #555;
+    }
+
+    .btn-next {
+      display: block;
+      width: 100%;
+      padding: 12px 0;
+      font-size: 14px;
+      color: #fff;
+      background: #9e9e9e;
+      border: none;
+      border-radius: 28px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-next:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-next:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-next:disabled {
+      background: #d0d0d0;
+      color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .relation-done-text {
+      font-size: 14px;
+      color: #555;
+      text-align: center;
+      padding: 12px 0;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+    }
+
+    .final-done {
+      display: none;
+      text-align: center;
+    }
+
+    .final-done.visible { display: block; }
+
+    .final-done-text {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.8;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-home {
+      display: inline-block;
+      padding: 12px 32px;
+      font-size: 14px;
+      color: #fff;
+      background: #9e9e9e;
+      border-radius: 30px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: all 0.35s ease;
+    }
+
+    .btn-home:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .gate-blocked {
+      display: none;
+      text-align: center;
+    }
+
+    .gate-blocked.visible { display: block; }
+
+    .gate-blocked-text {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .bottom-link { text-align: center; margin-top: 32px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 20px 16px; border-radius: 14px; }
+      .header-title { font-size: 20px; }
+      .header-subtitle { font-size: 12px; }
+      .scenario-title { font-size: 13px; }
+      .relation-label { font-size: 13px; padding: 10px 6px; }
+      .range-input::-webkit-slider-thumb { width: 20px; height: 20px; }
+      .range-container { height: 42px; }
+      .range-track { height: 7px; }
+      .range-highlight { height: 7px; }
+      .checkbox-label { font-size: 12px; }
+      .btn-home { padding: 10px 28px; font-size: 13px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 24px; }
+      .header-subtitle { font-size: 14px; }
+      .card { padding: 28px 28px; }
+      .scenario-title { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a href="mainwindow.html">← 返回主页</a>
+    </div>
+
+    <div class="header">
+      <div class="header-icon">🕊️</div>
+      <h1 class="header-title">信息记录</h1>
+      <p class="header-subtitle">在冷静时，为未来的自己标记判断的刻度。</p>
+    </div>
+
+    <div class="card gate-blocked" id="gateBlocked">
+      <p class="gate-blocked-text" id="gateBlockedText"></p>
+      <a href="mainwindow.html" class="btn-home">返回主页</a>
+    </div>
+
+    <div class="card" id="relationCard">
+      <div class="section-label">关系等级</div>
+      <div class="relation-group" id="relationGroup">
+        <div class="relation-option">
+          <input type="radio" name="relation" value="L1" id="relL1">
+          <label class="relation-label" for="relL1" id="labelL1">至交好友</label>
+        </div>
+        <div class="relation-option">
+          <input type="radio" name="relation" value="L2" id="relL2">
+          <label class="relation-label" for="relL2" id="labelL2">朋友</label>
+        </div>
+        <div class="relation-option">
+          <input type="radio" name="relation" value="L3" id="relL3">
+          <label class="relation-label" for="relL3" id="labelL3">熟人/一般相识</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card scenario-card" id="scenarioCard" style="display:none;">
+      <div class="progress-bar">
+        <span class="progress-text" id="progressText">第 1/12 题</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width: 8.33%;"></div>
+        </div>
+      </div>
+
+      <div class="scenario-title" id="scenarioTitle"></div>
+
+      <div class="range-wrapper" id="rangeWrapper">
+        <div class="question-label">我认为对方讨厌我的可能性</div>
+        <div class="range-container">
+          <div class="range-track"></div>
+          <div class="range-highlight" id="rangeHighlight"></div>
+          <input type="range" class="range-input lower" id="rangeLower" min="0" max="100" value="10" step="1">
+          <input type="range" class="range-input upper" id="rangeUpper" min="0" max="100" value="30" step="1">
+        </div>
+        <div class="range-labels">
+          <span>0%</span><span>50%</span><span>100%</span>
+        </div>
+        <div class="range-values" id="rangeValues">10% – 30%</div>
+      </div>
+
+      <div class="question-label">在刚才假设的情境下，你更倾向于怎么做？（可多选）</div>
+      <div class="checkbox-group" id="checkboxGroup">
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="认为自己的社交方式没有问题，回想被他人欣赏的经历" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">认为自己的社交方式没有问题，回想被他人欣赏的经历 —— 从积极角度重新看待自己</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="相信对方可能只是忙或状态不好" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">相信对方可能只是忙或状态不好 —— 尝试接受替代解释，不立即做出反应</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="在之后的相处中更谨慎" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">在之后的相处中更谨慎 —— 多注意自己的言行，避免再做可能让对方不满的事</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="暂时不联系对方，让自己平静下来" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">暂时不联系对方，让自己平静下来 —— 先拉开距离，不行动也不反复纠结</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="反复查看聊天记录或向他人寻求看法" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">反复查看聊天记录或向他人寻求看法 —— 试图从过往对话或第三方寻找对方是否讨厌自己的证据</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="在社交平台上发一些暗示性内容，试探对方是否讨厌自己" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">在社交平台上发一些暗示性内容，试探对方是否讨厌自己 —— 不直接问，但希望对方有所回应</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="直接去问对方或主动道歉" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">直接去问对方或主动道歉 —— 确认对方是否讨厌自己，或先道歉再说</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="对对方说冲动的话，或直接删除/拉黑" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">对对方说冲动的话，或直接删除/拉黑 —— 用决绝的方式结束这段内耗</span>
+        </label>
+      </div>
+      <div class="checkbox-hint" id="checkboxHint">请至少选择一项</div>
+
+      <div class="message-area" id="messageArea">
+        <div class="question-label">对未来的自己说句话（可选）</div>
+        <a href="anchor.html" class="btn-message" id="btnAnchorMessage">对未来的自己说句话</a>
+      </div>
+
+      <button type="button" class="btn-next" id="btnNext">下一个</button>
+    </div>
+
+    <div class="card relation-result" id="relationResult" style="display:none;">
+      <p class="relation-done-text" id="relationDoneText"></p>
+      <div class="section-label" id="nextRelationLabel">选择下一个要录入的关系</div>
+      <div class="relation-group" id="remainingGroup"></div>
+    </div>
+
+    <div class="card final-done" id="finalDone">
+      <p class="final-done-text">你已完成本次信息录入，共录入三种关系的信息。</p>
+      <a href="mainwindow.html" class="btn-home">返回主页</a>
+    </div>
+
+    <div class="bottom-link" id="bottomLink">
+      <a href="mainwindow.html">返回主页</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var FREQUENCY_LIMIT = 2;
+    var FREQUENCY_DAYS = 30;
+
+    var RELATION_NAMES = { L1: '至交好友', L2: '朋友', L3: '熟人/一般相识' };
+    var RELATION_KEYS = ['L1', 'L2', 'L3'];
+
+    var scenarios = [
+      { label: '我没做错什么事 · 对方的语言和社交频率没有明显变化' },
+      { label: '我没做错什么事 · 对方变冷淡或互动变少，但我知道有其他原因' },
+      { label: '我没做错什么事 · 对方变冷淡或互动变少，我不确定是否有其他原因' },
+      { label: '我没做错什么事 · 对方明确表达了不满' },
+      { label: '我觉得做错了，但对方没有表现出不满 · 对方的语言和社交频率没有明显变化' },
+      { label: '我觉得做错了，但对方没有表现出不满 · 对方变冷淡或互动变少，但我知道有其他原因' },
+      { label: '我觉得做错了，但对方没有表现出不满 · 对方变冷淡或互动变少，我不确定是否有其他原因' },
+      { label: '我觉得做错了，但对方没有表现出不满 · 对方明确表达了不满' },
+      { label: '我觉得做错了，对方因此明确表达了不满 · 对方的语言和社交频率没有明显变化' },
+      { label: '我觉得做错了，对方因此明确表达了不满 · 对方变冷淡或互动变少，但我知道有其他原因' },
+      { label: '我觉得做错了，对方因此明确表达了不满 · 对方变冷淡或互动变少，我不确定是否有其他原因' },
+      { label: '我觉得做错了，对方因此明确表达了不满 · 对方明确表达了不满' }
+    ];
+
+    var currentRelation = null;
+    var currentIndex = 0;
+    var completedRelations = {};
+    var scenarioData = [];
+    var allRelationData = {};
+
+    var rangeLower = document.getElementById('rangeLower');
+    var rangeUpper = document.getElementById('rangeUpper');
+    var rangeHighlight = document.getElementById('rangeHighlight');
+    var rangeValues = document.getElementById('rangeValues');
+    var rangeWrapper = document.getElementById('rangeWrapper');
+    var scenarioCard = document.getElementById('scenarioCard');
+    var scenarioTitle = document.getElementById('scenarioTitle');
+    var btnNext = document.getElementById('btnNext');
+    var progressText = document.getElementById('progressText');
+    var progressFill = document.getElementById('progressFill');
+    var checkboxHint = document.getElementById('checkboxHint');
+    var relationCard = document.getElementById('relationCard');
+    var relationResult = document.getElementById('relationResult');
+    var relationDoneText = document.getElementById('relationDoneText');
+    var remainingGroup = document.getElementById('remainingGroup');
+    var finalDone = document.getElementById('finalDone');
+    var bottomLink = document.getElementById('bottomLink');
+    var toast = document.getElementById('toast');
+    var btnAnchorMessage = document.getElementById('btnAnchorMessage');
+    var gateBlocked = document.getElementById('gateBlocked');
+    var gateBlockedText = document.getElementById('gateBlockedText');
+
+    function formatDate(d) {
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function getCheckboxes() {
+      return document.querySelectorAll('#checkboxGroup .action-checkbox');
+    }
+
+    function getCheckedActions() {
+      var boxes = getCheckboxes();
+      var actions = [];
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) actions.push(boxes[i].value);
+      }
+      return actions;
+    }
+
+    function setCheckedActions(actions) {
+      var boxes = getCheckboxes();
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].checked = actions.indexOf(boxes[i].value) !== -1;
+      }
+    }
+
+    function hasAtLeastOneCheck() {
+      var boxes = getCheckboxes();
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) return true;
+      }
+      return false;
+    }
+
+    function updateNextButton() {
+      if (hasAtLeastOneCheck()) {
+        btnNext.disabled = false;
+        checkboxHint.style.color = '#bbb';
+      } else {
+        btnNext.disabled = true;
+        checkboxHint.style.color = '#c88';
+      }
+    }
+
+    function updateRangeHighlight() {
+      var lower = parseInt(rangeLower.value, 10);
+      var upper = parseInt(rangeUpper.value, 10);
+      if (lower > upper) {
+        rangeLower.value = upper;
+        lower = upper;
+      }
+      rangeHighlight.style.left = lower + '%';
+      rangeHighlight.style.width = (upper - lower) + '%';
+      rangeValues.textContent = lower + '% – ' + upper + '%';
+    }
+
+    function saveCurrentScenario() {
+      scenarioData[currentIndex].dislikeLower = parseInt(rangeLower.value, 10);
+      scenarioData[currentIndex].dislikeUpper = parseInt(rangeUpper.value, 10);
+      scenarioData[currentIndex].actions = getCheckedActions();
+    }
+
+    function loadScenario(index) {
+      var data = scenarioData[index];
+      rangeLower.value = data.dislikeLower;
+      rangeUpper.value = data.dislikeUpper;
+      scenarioTitle.textContent = data.label;
+      progressText.textContent = '第 ' + (index + 1) + '/12 题';
+      progressFill.style.width = ((index + 1) / 12 * 100) + '%';
+
+      setCheckedActions(data.actions);
+
+      btnNext.textContent = index === 11 ? '完成' : '下一个';
+
+      updateRangeHighlight();
+      updateNextButton();
+      updateAnchorLink();
+    }
+
+    function enableSliders() {
+      rangeWrapper.classList.remove('scenario-disabled');
+      rangeLower.disabled = false;
+      rangeUpper.disabled = false;
+      var boxes = getCheckboxes();
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].disabled = false;
+      }
+    }
+
+    function disableSliders() {
+      rangeWrapper.classList.add('scenario-disabled');
+      rangeLower.disabled = true;
+      rangeUpper.disabled = true;
+      var boxes = getCheckboxes();
+      for (var i = 0; i < boxes.length; i++) {
+        boxes[i].disabled = true;
+      }
+    }
+
+    function updateAnchorLink() {
+      if (!currentRelation) return;
+      saveCurrentScenario();
+      var label = scenarioData[currentIndex].label;
+      var qIdx = currentIndex + 1;
+      var params = '?from=archive&relationship=' + encodeURIComponent(currentRelation) +
+                   '&scenario=' + encodeURIComponent(label) +
+                   '&question_index=' + qIdx;
+      btnAnchorMessage.href = 'anchor.html' + params;
+    }
+
+    function saveResumeState() {
+      if (!currentRelation) return;
+      sessionStorage.setItem('archive_resume', JSON.stringify({
+        relation: currentRelation,
+        index: currentIndex,
+        data: scenarioData,
+        allData: allRelationData,
+        completed: completedRelations
+      }));
+    }
+
+    btnAnchorMessage.addEventListener('click', function() {
+      saveCurrentScenario();
+      saveResumeState();
+    });
+
+    function resetScenarioData() {
+      scenarioData = [];
+      for (var i = 0; i < scenarios.length; i++) {
+        scenarioData.push({ label: scenarios[i].label, dislikeLower: 10, dislikeUpper: 30, actions: [], message: '' });
+      }
+    }
+
+    function markRelationCompleted(relKey) {
+      completedRelations[relKey] = true;
+      var labelId = 'labelL' + relKey.slice(1);
+      var label = document.getElementById(labelId);
+      if (label) {
+        label.classList.add('completed');
+        label.textContent = RELATION_NAMES[relKey] + ' ✓';
+      }
+      var radio = document.getElementById('rel' + relKey);
+      if (radio) radio.disabled = true;
+    }
+
+    function showRelationPicker() {
+      relationCard.style.display = 'block';
+      scenarioCard.style.display = 'none';
+      relationResult.style.display = 'none';
+      finalDone.classList.remove('visible');
+      bottomLink.style.display = 'block';
+
+      for (var i = 0; i < RELATION_KEYS.length; i++) {
+        if (completedRelations[RELATION_KEYS[i]]) {
+          var radio = document.getElementById('rel' + RELATION_KEYS[i]);
+          if (radio) { radio.checked = false; radio.disabled = true; }
+        }
+      }
+    }
+
+    function showRemainingOptions() {
+      relationCard.style.display = 'none';
+      scenarioCard.style.display = 'none';
+      relationResult.style.display = 'block';
+
+      var remaining = [];
+      for (var i = 0; i < RELATION_KEYS.length; i++) {
+        if (!completedRelations[RELATION_KEYS[i]]) {
+          remaining.push(RELATION_KEYS[i]);
+        }
+      }
+
+      if (remaining.length === 0) {
+        relationResult.style.display = 'none';
+        finalDone.classList.add('visible');
+        bottomLink.style.display = 'none';
+        submitAllData();
+        return;
+      }
+
+      remainingGroup.innerHTML = '';
+
+      if (remaining.length === RELATION_KEYS.length - 1) {
+        document.getElementById('nextRelationLabel').style.display = 'block';
+      } else {
+        document.getElementById('nextRelationLabel').style.display = 'none';
+      }
+
+      for (var r = 0; r < remaining.length; r++) {
+        (function(relKey) {
+          var div = document.createElement('div');
+          div.className = 'relation-option';
+          var inputId = 'remaining_' + relKey;
+          div.innerHTML =
+            '<input type="radio" name="remainingRelation" value="' + relKey + '" id="' + inputId + '">' +
+            '<label class="relation-label" for="' + inputId + '">' + RELATION_NAMES[relKey] + '</label>';
+          remainingGroup.appendChild(div);
+
+          var radio = div.querySelector('input');
+          radio.addEventListener('change', function() {
+            startRelation(relKey);
+            relationResult.style.display = 'none';
+          });
+        })(remaining[r]);
+      }
+    }
+
+    function startRelation(relKey) {
+      currentRelation = relKey;
+      currentIndex = 0;
+      resetScenarioData();
+
+      relationCard.style.display = 'none';
+      scenarioCard.style.display = 'block';
+      relationResult.style.display = 'none';
+
+      enableSliders();
+      btnNext.disabled = !hasAtLeastOneCheck();
+      updateNextButton();
+      updateAnchorLink();
+      loadScenario(0);
+    }
+
+    function relationCompleted() {
+      saveCurrentScenario();
+      allRelationData[currentRelation] = scenarioData.slice();
+      markRelationCompleted(currentRelation);
+
+      showRemainingOptions();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function submitAllData() {
+      var now = new Date();
+      var record = {
+        id: now.getTime(),
+        date: formatDate(now),
+        time: String(now.getHours()).padStart(2, '0') + ':' +
+              String(now.getMinutes()).padStart(2, '0'),
+        assessment_level: 'green',
+        relationships: {}
+      };
+
+      for (var i = 0; i < RELATION_KEYS.length; i++) {
+        var key = RELATION_KEYS[i];
+        record.relationships[key] = allRelationData[key];
+      }
+
+      var history = [];
+      try {
+        var stored = localStorage.getItem('archive_records');
+        if (stored) history = JSON.parse(stored);
+      } catch (e) {}
+
+      history.push(record);
+
+      var cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 90);
+      var filtered = [];
+      var hasRecent = false;
+      for (var j = 0; j < history.length; j++) {
+        if (new Date(history[j].date) >= cutoff) {
+          filtered.push(history[j]);
+          hasRecent = true;
+        }
+      }
+      if (!hasRecent && history.length > 0) {
+        filtered.push(history[history.length - 1]);
+      }
+
+      localStorage.setItem('archive_records', JSON.stringify(filtered));
+      localStorage.setItem('archive_completed', 'true');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getRelationName(relKey) {
+      return RELATION_NAMES[relKey] || relKey;
+    }
+
+    btnNext.addEventListener('click', function() {
+      saveCurrentScenario();
+
+      if (currentIndex < 11) {
+        currentIndex++;
+        loadScenario(currentIndex);
+      } else {
+        relationDoneText.textContent = '你已完成【' + getRelationName(currentRelation) + '】的信息录入。';
+        setTimeout(function() {
+          relationCompleted();
+        }, 100);
+      }
+    });
+
+    rangeLower.addEventListener('input', function() {
+      var lower = parseInt(rangeLower.value, 10);
+      var upper = parseInt(rangeUpper.value, 10);
+      if (lower > upper) rangeUpper.value = lower;
+      updateRangeHighlight();
+    });
+
+    rangeUpper.addEventListener('input', function() {
+      var upper = parseInt(rangeUpper.value, 10);
+      var lower = parseInt(rangeLower.value, 10);
+      if (upper < lower) rangeLower.value = upper;
+      updateRangeHighlight();
+    });
+
+    var checkboxes = document.querySelectorAll('#checkboxGroup .action-checkbox');
+    for (var c = 0; c < checkboxes.length; c++) {
+      checkboxes[c].addEventListener('change', updateNextButton);
+    }
+
+    function checkFrequencyLimit() {
+      try {
+        var records = localStorage.getItem('archive_records');
+        if (!records) return true;
+        var list = JSON.parse(records);
+        var cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - FREQUENCY_DAYS);
+        var count = 0;
+        for (var i = 0; i < list.length; i++) {
+          if (new Date(list[i].date) >= cutoff) count++;
+        }
+        return count < FREQUENCY_LIMIT;
+      } catch (e) {
+        return true;
+      }
+    }
+
+    function checkAssessmentValid() {
+      try {
+        var assessment = localStorage.getItem('current_assessment');
+        if (!assessment) return 'no_assessment';
+        var parsed = JSON.parse(assessment);
+        if (parsed.level !== 'green') return 'not_green';
+
+        if (parsed.date) {
+          var d = new Date(parsed.date);
+          var now = new Date();
+          if (d.getFullYear() !== now.getFullYear() ||
+              d.getMonth() !== now.getMonth() ||
+              d.getDate() !== now.getDate()) {
+            return 'expired';
+          }
+        }
+
+        return 'ok';
+      } catch (e) {
+        return 'no_assessment';
+      }
+    }
+
+    function showGateBlocked(msg) {
+      gateBlockedText.textContent = msg;
+      gateBlocked.classList.add('visible');
+      relationCard.style.display = 'none';
+      scenarioCard.style.display = 'none';
+      bottomLink.style.display = 'none';
+    }
+
+    function initPage() {
+      var check = checkAssessmentValid();
+      if (check === 'no_assessment') {
+        showGateBlocked('请先在欢迎页完成心理评估。');
+        return;
+      }
+      if (check === 'not_green') {
+        showGateBlocked('你当前的情绪状态不允许录入新数据。请等到状态更平稳时再来。');
+        return;
+      }
+      if (check === 'expired') {
+        showGateBlocked('你的心理评估已过期，请重新评估。');
+        return;
+      }
+
+      if (!checkFrequencyLimit()) {
+        showGateBlocked('30天内最多录入2次，请在下个周期再尝试。');
+        return;
+      }
+
+      disableSliders();
+      btnNext.disabled = true;
+
+      var resume = sessionStorage.getItem('archive_resume');
+      if (resume) {
+        try {
+          var saved = JSON.parse(resume);
+          if (saved.relation && saved.data) {
+            scenarioData = saved.data;
+            currentRelation = saved.relation;
+            currentIndex = saved.index || 0;
+            if (saved.allData) allRelationData = saved.allData;
+            if (saved.completed) completedRelations = saved.completed;
+            allRelationData[currentRelation] = scenarioData.slice();
+            sessionStorage.removeItem('archive_resume');
+
+            for (var rk in completedRelations) {
+              if (completedRelations[rk]) {
+                markRelationCompleted(rk);
+              }
+            }
+
+            relationCard.style.display = 'none';
+            scenarioCard.style.display = 'block';
+            enableSliders();
+            btnNext.disabled = !hasAtLeastOneCheck();
+            updateNextButton();
+            updateAnchorLink();
+            loadScenario(currentIndex);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      var relationRadios = document.querySelectorAll('#relationCard input[name="relation"]');
+      for (var r = 0; r < relationRadios.length; r++) {
+        relationRadios[r].addEventListener('change', function() {
+          if (this.disabled) return;
+          var relKey = this.value;
+          startRelation(relKey);
+        });
+      }
+    }
+
+    initPage();
+  </script>
+</body>
+</html>

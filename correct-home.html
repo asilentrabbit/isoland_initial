@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>认知对照 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 28px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-label {
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+
+    .score-display {
+      text-align: center;
+      font-size: 52px;
+      color: #555;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+      font-family: Georgia, 'Times New Roman', serif;
+      transition: color 0.25s ease;
+    }
+
+    .slider-container {
+      position: relative;
+      height: 48px;
+      margin-bottom: 4px;
+    }
+
+    .slider-track {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(to right, #c8e6c9, #e0e0e0, #ffcdd2);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .slider-input {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 48px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      margin: 0;
+      z-index: 2;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #7a7a7a;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+      background: #555;
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #7a7a7a;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .slider-input::-moz-range-thumb:active {
+      transform: scale(1.15);
+      background: #555;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #bbb;
+      margin-bottom: 4px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .checkbox-item { display: flex; align-items: flex-start; gap: 10px; }
+
+    .checkbox-item input[type="checkbox"] { display: none; }
+
+    .checkbox-box {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border-radius: 6px;
+      border: 2px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      margin-top: 1px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-box::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: transparent;
+      transition: background 0.25s ease;
+    }
+
+    input[type="checkbox"]:checked + .checkbox-box {
+      border-color: #9e9e9e;
+      background: #9e9e9e;
+    }
+
+    input[type="checkbox"]:checked + .checkbox-box::after {
+      background: #fff;
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .checkbox-hint {
+      font-size: 11px;
+      color: #bbb;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-area {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .btn-submit {
+      display: inline-block;
+      padding: 14px 36px;
+      font-size: 14px;
+      color: #fff;
+      background: #9e9e9e;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-submit:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-submit:disabled {
+      background: #d0d0d0;
+      color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      letter-spacing: 0.02em;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .bottom-link { text-align: center; margin-top: 32px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 20px 16px; border-radius: 14px; }
+      .header-title { font-size: 20px; }
+      .header-subtitle { font-size: 12px; }
+      .score-display { font-size: 42px; }
+      .checkbox-label { font-size: 12px; }
+      .slider-input::-webkit-slider-thumb { width: 22px; height: 22px; }
+      .slider-container { height: 42px; }
+      .slider-track { height: 7px; }
+      .btn-submit { padding: 12px 28px; font-size: 13px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 24px; }
+      .header-subtitle { font-size: 14px; }
+      .card { padding: 28px 28px; }
+      .score-display { font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a href="mainwindow.html">← 返回主页</a>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">认知对照</h1>
+      <p class="header-subtitle">看看此刻的判断与冷静时有什么不同。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label">你现在认为对方讨厌你的可能性</div>
+      <div class="score-display" id="scoreDisplay">20%</div>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <input type="range" class="slider-input" id="sliderInput" min="0" max="100" value="20" step="1">
+      </div>
+      <div class="slider-labels">
+        <span>0% 不可能</span><span>50%</span><span>100% 极可能</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">你现在想要怎么做？（多选）</div>
+      <div class="checkbox-group" id="checkboxGroup">
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="认为自己的社交方式没有问题，回想被他人欣赏的经历" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">认为自己的社交方式没有问题，回想被他人欣赏的经历 —— 从积极角度重新看待自己</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="相信对方可能只是忙或状态不好" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">相信对方可能只是忙或状态不好 —— 尝试接受替代解释，不立即做出反应</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="在之后的相处中更谨慎" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">在之后的相处中更谨慎 —— 多注意自己的言行，避免再做可能让对方不满的事</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="暂时不联系对方，让自己平静下来" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">暂时不联系对方，让自己平静下来 —— 先拉开距离，不行动也不反复纠结</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="反复查看聊天记录或向他人寻求看法" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">反复查看聊天记录或向他人寻求看法 —— 试图从过往对话或第三方寻找对方是否讨厌自己的证据</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="在社交平台上发一些暗示性内容，试探对方是否讨厌自己" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">在社交平台上发一些暗示性内容，试探对方是否讨厌自己 —— 不直接问，但希望对方有所回应</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="直接去问对方或主动道歉" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">直接去问对方或主动道歉 —— 确认对方是否讨厌自己，或先道歉再说</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="action" value="对对方说冲动的话，或直接删除/拉黑" class="action-checkbox">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">对对方说冲动的话，或直接删除/拉黑 —— 用决绝的方式结束这段内耗</span>
+        </label>
+      </div>
+      <div class="checkbox-hint" id="checkboxHint">请至少选择一项</div>
+    </div>
+
+    <div class="btn-area">
+      <button type="button" class="btn-submit" id="btnSubmit" disabled>记录此刻，进入认知对照</button>
+    </div>
+
+    <div class="bottom-link">
+      <a href="mainwindow.html">返回主页</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var sliderInput = document.getElementById('sliderInput');
+    var scoreDisplay = document.getElementById('scoreDisplay');
+    var btnSubmit = document.getElementById('btnSubmit');
+    var checkboxHint = document.getElementById('checkboxHint');
+    var toast = document.getElementById('toast');
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function getCheckboxes() {
+      return document.querySelectorAll('#checkboxGroup .action-checkbox');
+    }
+
+    function hasAtLeastOneCheck() {
+      var boxes = getCheckboxes();
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) return true;
+      }
+      return false;
+    }
+
+    function updateSubmitButton() {
+      if (hasAtLeastOneCheck()) {
+        btnSubmit.disabled = false;
+        checkboxHint.style.color = '#bbb';
+      } else {
+        btnSubmit.disabled = true;
+        checkboxHint.style.color = '#c88';
+      }
+    }
+
+    function getCheckedActions() {
+      var boxes = getCheckboxes();
+      var actions = [];
+      for (var i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) actions.push(boxes[i].value);
+      }
+      return actions;
+    }
+
+    sliderInput.addEventListener('input', function() {
+      var val = parseInt(sliderInput.value, 10);
+      scoreDisplay.textContent = val + '%';
+    });
+
+    var checkboxes = document.querySelectorAll('#checkboxGroup .action-checkbox');
+    for (var c = 0; c < checkboxes.length; c++) {
+      checkboxes[c].addEventListener('change', updateSubmitButton);
+    }
+
+    btnSubmit.addEventListener('click', function() {
+      if (!hasAtLeastOneCheck()) {
+        showToast('请至少选择一项行为倾向。');
+        return;
+      }
+
+      var now = new Date();
+      var tempData = {
+        dislike_score: parseInt(sliderInput.value, 10),
+        actions: getCheckedActions(),
+        timestamp: now.getFullYear() + '-' +
+          String(now.getMonth() + 1).padStart(2, '0') + '-' +
+          String(now.getDate()).padStart(2, '0') + ' ' +
+          String(now.getHours()).padStart(2, '0') + ':' +
+          String(now.getMinutes()).padStart(2, '0')
+      };
+
+      localStorage.setItem('temp_correct_input', JSON.stringify(tempData));
+      window.location.href = 'correct-main.html';
+    });
+
+    updateSubmitButton();
+  </script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>认知对照 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 28px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .status-tag.green {
+      background: #e8f0e8;
+      color: #7a9a7a;
+    }
+
+    .status-tag.yellow {
+      background: #f0ece0;
+      color: #b0a070;
+    }
+
+    .status-tag.red {
+      background: #f0e6e6;
+      color: #b08080;
+    }
+
+    .status-tag.none {
+      background: #f0f0f0;
+      color: #bbb;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .status-dot.green { background: #7a9a7a; }
+    .status-dot.yellow { background: #b0a070; }
+    .status-dot.red { background: #b08080; }
+    .status-dot.none { background: #ccc; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-label {
+      font-size: 14px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option-item input[type="radio"] { display: none; }
+
+    .option-circle {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border-radius: 50%;
+      border: 2px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .option-circle::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.25s ease;
+    }
+
+    input[type="radio"]:checked + .option-circle {
+      border-color: #9e9e9e;
+      background: #9e9e9e;
+    }
+
+    input[type="radio"]:checked + .option-circle::after {
+      background: #fff;
+    }
+
+    .option-text {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-area {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .btn-submit {
+      display: inline-block;
+      padding: 14px 36px;
+      font-size: 14px;
+      color: #fff;
+      background: #9e9e9e;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-submit:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-submit:disabled {
+      background: #d0d0d0;
+      color: #aaa;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      letter-spacing: 0.02em;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    .toast.show { opacity: 1; }
+
+    .bottom-link { text-align: center; margin-top: 32px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 20px 16px; border-radius: 14px; }
+      .header-title { font-size: 20px; }
+      .option-text { font-size: 13px; }
+      .btn-submit { padding: 12px 28px; font-size: 13px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 24px; }
+      .card { padding: 28px 28px; }
+      .option-text { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a href="correct-home.html">← 返回认知对照</a>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">认知对照</h1>
+      <span class="status-tag" id="statusTag">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText"></span>
+      </span>
+    </div>
+
+    <div class="card">
+      <div class="card-label">你与对方的关系</div>
+      <div class="option-group" id="group1">
+        <label class="option-item">
+          <input type="radio" name="relationship" value="至交好友">
+          <span class="option-circle"></span>
+          <span class="option-text">至交好友</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="relationship" value="朋友">
+          <span class="option-circle"></span>
+          <span class="option-text">朋友</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="relationship" value="熟人/一般相识">
+          <span class="option-circle"></span>
+          <span class="option-text">熟人/一般相识</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">你觉得自己做错什么了吗？</div>
+      <div class="option-group" id="group2">
+        <label class="option-item">
+          <input type="radio" name="selfPerception" value="我没做错什么事">
+          <span class="option-circle"></span>
+          <span class="option-text">我没做错什么事</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="selfPerception" value="我觉得做错了，但对方没有表现出不满">
+          <span class="option-circle"></span>
+          <span class="option-text">我觉得做错了，但对方没有表现出不满</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="selfPerception" value="我觉得做错了，对方因此明确表达了不满">
+          <span class="option-circle"></span>
+          <span class="option-text">我觉得做错了，对方因此明确表达了不满</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">对方明确地疏远你了吗？</div>
+      <div class="option-group" id="group3">
+        <label class="option-item">
+          <input type="radio" name="otherBehavior" value="对方的语言和社交频率没有明显变化">
+          <span class="option-circle"></span>
+          <span class="option-text">对方的语言和社交频率没有明显变化</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="otherBehavior" value="对方变冷淡或互动变少，但我知道有其他原因">
+          <span class="option-circle"></span>
+          <span class="option-text">对方变冷淡或互动变少，但我知道有其他原因</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="otherBehavior" value="对方变冷淡或互动变少，我不确定是否有其他原因">
+          <span class="option-circle"></span>
+          <span class="option-text">对方变冷淡或互动变少，我不确定是否有其他原因</span>
+        </label>
+        <label class="option-item">
+          <input type="radio" name="otherBehavior" value="对方明确表达了不满">
+          <span class="option-circle"></span>
+          <span class="option-text">对方明确表达了不满</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-area">
+      <button type="button" class="btn-submit" id="btnSubmit" disabled>对比冷静时的我</button>
+    </div>
+
+    <div class="bottom-link">
+      <a href="mainwindow.html">返回主页</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var RELATION_MAP = { '至交好友': 'L1', '朋友': 'L2', '熟人/一般相识': 'L3' };
+    var LEVEL_LABELS = { green: '状态良好', yellow: '状态偏高', red: '需要关注' };
+    var RECENT_DAYS = 30;
+
+    var btnSubmit = document.getElementById('btnSubmit');
+    var statusTag = document.getElementById('statusTag');
+    var statusDot = document.getElementById('statusDot');
+    var statusText = document.getElementById('statusText');
+    var toast = document.getElementById('toast');
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function getAssessment() {
+      try {
+        var data = localStorage.getItem('current_assessment');
+        if (!data) return null;
+        return JSON.parse(data);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function getSelected(name) {
+      var radios = document.querySelectorAll('input[name="' + name + '"]');
+      for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) return radios[i].value;
+      }
+      return null;
+    }
+
+    function allThreeSelected() {
+      return getSelected('relationship') &&
+             getSelected('selfPerception') &&
+             getSelected('otherBehavior');
+    }
+
+    function updateSubmitButton() {
+      btnSubmit.disabled = !allThreeSelected();
+    }
+
+    function renderStatus() {
+      var assessment = getAssessment();
+      if (!assessment) {
+        statusTag.className = 'status-tag none';
+        statusDot.className = 'status-dot none';
+        statusText.textContent = '尚未完成心理评估';
+        return;
+      }
+      var level = assessment.level || 'none';
+      var levelText = LEVEL_LABELS[level] || '未知';
+      var dateStr = assessment.date || '未知日期';
+
+      statusTag.className = 'status-tag ' + (LEVEL_LABELS[level] ? level : 'none');
+      statusDot.className = 'status-dot ' + (LEVEL_LABELS[level] ? level : 'none');
+      statusText.textContent = '当前情绪状态：' + levelText + '（评估于 ' + dateStr + '）';
+    }
+
+    function formatDate(d) {
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function getCorrectInput() {
+      try {
+        var data = localStorage.getItem('temp_correct_input');
+        if (!data) return null;
+        return JSON.parse(data);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function getArchiveRecords() {
+      try {
+        var data = localStorage.getItem('archive_records');
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function findMatchingCalmRecord() {
+      var relationship = getSelected('relationship');
+      var selfPerception = getSelected('selfPerception');
+      var otherBehavior = getSelected('otherBehavior');
+      var relKey = RELATION_MAP[relationship];
+      var scenarioLabel = selfPerception + ' · ' + otherBehavior;
+
+      var records = getArchiveRecords();
+      if (records.length === 0) return null;
+
+      var cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - RECENT_DAYS);
+
+      var recent = [];
+      for (var i = 0; i < records.length; i++) {
+        if (new Date(records[i].date) >= cutoff) {
+          recent.push(records[i]);
+        }
+      }
+
+      var candidate = null;
+      if (recent.length > 0) {
+        recent.sort(function(a, b) { return b.id - a.id; });
+        candidate = recent[0];
+      } else {
+        records.sort(function(a, b) { return b.id - a.id; });
+        candidate = records[0];
+      }
+
+      if (!candidate || !candidate.relationships || !candidate.relationships[relKey]) {
+        return null;
+      }
+
+      var scenarios = candidate.relationships[relKey];
+      for (var s = 0; s < scenarios.length; s++) {
+        if (scenarios[s].label === scenarioLabel) {
+          return {
+            lower: scenarios[s].dislikeLower,
+            upper: scenarios[s].dislikeUpper,
+            actions: scenarios[s].actions,
+            recordDate: candidate.date
+          };
+        }
+      }
+
+      return null;
+    }
+
+    btnSubmit.addEventListener('click', function() {
+      if (!allThreeSelected()) return;
+
+      var assessment = getAssessment();
+      if (!assessment) {
+        showToast('请先完成心理评估。');
+        return;
+      }
+
+      var correctInput = getCorrectInput();
+      if (!correctInput) {
+        showToast('请先从认知对照首页录入当前状态。');
+        return;
+      }
+
+      var calmRecord = findMatchingCalmRecord();
+      if (!calmRecord) {
+        showToast('暂无对应关系等级的冷静期记录。请先在信息记录中完成录入。');
+        return;
+      }
+
+      var now = new Date();
+      var currentSituation = {
+        relationship: getSelected('relationship'),
+        self_perception: getSelected('selfPerception'),
+        other_behavior: getSelected('otherBehavior'),
+        dislike_score: correctInput.dislike_score,
+        actions: correctInput.actions,
+        timestamp: formatDate(now) + ' ' +
+          String(now.getHours()).padStart(2, '0') + ':' +
+          String(now.getMinutes()).padStart(2, '0')
+      };
+
+      var comparisonData = {
+        current: currentSituation,
+        calm_baseline: calmRecord,
+        calm_record_date: calmRecord.recordDate
+      };
+
+      localStorage.setItem('current_situation', JSON.stringify(currentSituation));
+      localStorage.setItem('comparison_data', JSON.stringify(comparisonData));
+
+      window.location.href = 'correct-thought.html';
+    });
+
+    var allRadios = document.querySelectorAll('input[type="radio"]');
+    for (var r = 0; r < allRadios.length; r++) {
+      allRadios[r].addEventListener('change', updateSubmitButton);
+    }
+
+    renderStatus();
+    updateSubmitButton();
+  </script>
+</body>
+</html>

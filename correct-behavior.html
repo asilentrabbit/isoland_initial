@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行为对照 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 28px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #333;
+      letter-spacing: 0.04em;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-label {
+      font-size: 14px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      margin-bottom: 14px;
+    }
+
+    .history-empty {
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+      padding: 20px 0;
+      letter-spacing: 0.03em;
+    }
+
+    .record-card {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 16px 16px;
+      margin-bottom: 10px;
+      border: 1px solid #eee;
+    }
+
+    .record-title {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .record-desc {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-compare {
+      display: inline-block;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: #555;
+      background: #fff;
+      border: 1px solid #d0d0d0;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-compare:hover {
+      background: #f0f0f0;
+      border-color: #b0b0b0;
+    }
+
+    .btn-compare.selected {
+      background: #9e9e9e;
+      color: #fff;
+      border-color: #9e9e9e;
+    }
+
+    .analysis-area { display: none; }
+
+    .analysis-area.visible { display: block; }
+
+    .behavior-group {
+      margin-bottom: 20px;
+    }
+
+    .behavior-summary {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .behavior-summary .calm-line { color: #8a9a80; }
+
+    .behavior-summary .current-line { color: #666; }
+
+    .behavior-summary strong { font-weight: 600; }
+
+    .behavior-group-label {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .behavior-item {
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+
+    .behavior-item.both {
+      background: #eef3eb;
+      border-left: 3px solid #a8b8a0;
+    }
+
+    .behavior-item.current-only {
+      background: #f7f2e6;
+      border-left: 3px solid #c8b878;
+    }
+
+    .behavior-item.calm-only {
+      background: #eef0f3;
+      border-left: 3px solid #a0aab8;
+    }
+
+    .behavior-item-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .behavior-item.both .behavior-item-title { color: #5a6b50; }
+    .behavior-item.current-only .behavior-item-title { color: #8a7a40; }
+    .behavior-item.calm-only .behavior-item-title { color: #5a6678; }
+
+    .behavior-item-text {
+      font-size: 13px;
+      color: #666;
+      letter-spacing: 0.02em;
+    }
+
+    .behavior-item-message {
+      font-size: 13px;
+      color: #555;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #d0d8c8;
+      font-style: italic;
+      letter-spacing: 0.02em;
+    }
+
+    .behavior-empty {
+      font-size: 13px;
+      color: #bbb;
+      padding: 12px 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .anchor-area { display: none; }
+
+    .anchor-area.visible { display: block; }
+
+    .anchor-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .anchor-header-title {
+      font-size: 16px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .anchor-header-subtitle {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.02em;
+    }
+
+    .anchor-card {
+      background: #fafaf7;
+      border-radius: 12px;
+      padding: 16px 16px;
+      margin-bottom: 10px;
+      border: 1px solid #eee;
+    }
+
+    .anchor-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .anchor-date {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.02em;
+    }
+
+    .anchor-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .anchor-level.green { background: #e8f0e8; color: #7a9a7a; }
+    .anchor-level.yellow { background: #f0ece0; color: #b0a070; }
+    .anchor-level.red { background: #f0e6e6; color: #b08080; }
+    .anchor-level.unknown { background: #f0f0f0; color: #bbb; }
+
+    .anchor-level-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .anchor-level-dot.green { background: #7a9a7a; }
+    .anchor-level-dot.yellow { background: #b0a070; }
+    .anchor-level-dot.red { background: #b08080; }
+    .anchor-level-dot.unknown { background: #ccc; }
+
+    .anchor-content {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .anchor-empty {
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+      padding: 20px 0;
+      letter-spacing: 0.03em;
+    }
+
+    .anchor-empty-link {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .anchor-empty-link:hover { color: #666; }
+
+    .bottom-link { text-align: center; margin-top: 32px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 20px 16px; border-radius: 14px; }
+      .header-title { font-size: 20px; }
+      .behavior-item { padding: 12px 14px; }
+      .behavior-item-text { font-size: 12px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 24px; }
+      .card { padding: 28px 28px; }
+      .behavior-item-text { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a href="correct-thought.html">← 返回认知分析</a>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">行为对照</h1>
+    </div>
+
+    <div class="card" id="historyCard">
+      <div class="section-label">选择一份冷静期的记录进行对照</div>
+      <div id="historyList"></div>
+      <div class="history-empty" id="historyEmpty">暂无匹配的冷静期记录。</div>
+    </div>
+
+    <div class="card analysis-area" id="analysisArea">
+      <div class="section-label" id="analysisLabel"></div>
+
+      <div class="behavior-summary" id="behaviorSummary"></div>
+
+      <div class="behavior-group" id="groupBoth">
+        <div class="behavior-group-label" id="labelBoth">你与冷静时的你都选择了</div>
+        <div id="groupBothContent"></div>
+      </div>
+
+      <div class="behavior-group" id="groupCurrentOnly">
+        <div class="behavior-group-label" id="labelCurrentOnly">你现在选择了，但冷静时的你没有选择</div>
+        <div id="groupCurrentOnlyContent"></div>
+      </div>
+
+      <div class="behavior-group" id="groupCalmOnly">
+        <div class="behavior-group-label" id="labelCalmOnly">冷静时的你选择了，但你现在没有选择</div>
+        <div id="groupCalmOnlyContent"></div>
+      </div>
+    </div>
+
+    <div class="card anchor-area" id="anchorArea">
+      <div class="anchor-header">
+        <div class="anchor-header-title">跨越时间的信</div>
+        <div class="anchor-header-subtitle">冷静时的你，留给面对类似情境的自己的话。</div>
+      </div>
+      <div id="anchorList"></div>
+      <div class="anchor-empty" id="anchorEmpty">你还没有留下跨越时间的信。去抛锚点写一封吧。</div>
+    </div>
+
+    <div class="bottom-link">
+      <a href="mainwindow.html">返回主页</a>
+    </div>
+  </div>
+
+  <script>
+    var RECENT_DAYS = 30;
+    var ANCHOR_DAYS = 180;
+    var RELATION_NAMES = { L1: '至交好友', L2: '朋友', L3: '熟人/一般相识' };
+    var LEVEL_LABELS = { green: '状态良好', yellow: '状态偏高', red: '需要关注' };
+
+    var historyListEl = document.getElementById('historyList');
+    var historyEmpty = document.getElementById('historyEmpty');
+    var analysisArea = document.getElementById('analysisArea');
+    var analysisLabel = document.getElementById('analysisLabel');
+    var behaviorSummary = document.getElementById('behaviorSummary');
+    var labelBoth = document.getElementById('labelBoth');
+    var labelCurrentOnly = document.getElementById('labelCurrentOnly');
+    var labelCalmOnly = document.getElementById('labelCalmOnly');
+    var groupBothContent = document.getElementById('groupBothContent');
+    var groupCurrentOnlyContent = document.getElementById('groupCurrentOnlyContent');
+    var groupCalmOnlyContent = document.getElementById('groupCalmOnlyContent');
+    var anchorArea = document.getElementById('anchorArea');
+    var anchorList = document.getElementById('anchorList');
+    var anchorEmpty = document.getElementById('anchorEmpty');
+
+    function getCurrentSituation() {
+      try {
+        var data = localStorage.getItem('current_situation');
+        return data ? JSON.parse(data) : null;
+      } catch (e) { return null; }
+    }
+
+    function getCorrectInput() {
+      try {
+        var data = localStorage.getItem('temp_correct_input');
+        return data ? JSON.parse(data) : null;
+      } catch (e) { return null; }
+    }
+
+    function getArchiveRecords() {
+      try {
+        var data = localStorage.getItem('archive_records');
+        return data ? JSON.parse(data) : [];
+      } catch (e) { return []; }
+    }
+
+    function getAnchorRecords() {
+      try {
+        var data = localStorage.getItem('anchor_records');
+        return data ? JSON.parse(data) : [];
+      } catch (e) { return []; }
+    }
+
+    function getRelationKey(relationshipName) {
+      if (relationshipName === '至交好友') return 'L1';
+      if (relationshipName === '朋友') return 'L2';
+      if (relationshipName === '熟人/一般相识') return 'L3';
+      return null;
+    }
+
+    function findMatchingRecords() {
+      var situation = getCurrentSituation();
+      if (!situation) return [];
+      var relKey = getRelationKey(situation.relationship);
+      if (!relKey) return [];
+
+      var scenarioLabel = situation.self_perception + ' · ' + situation.other_behavior;
+
+      var records = getArchiveRecords();
+      var matched = [];
+
+      for (var i = 0; i < records.length; i++) {
+        var rec = records[i];
+        if (!rec.relationships || !rec.relationships[relKey]) continue;
+
+        var scenarios = rec.relationships[relKey];
+        for (var s = 0; s < scenarios.length; s++) {
+          if (scenarios[s].label === scenarioLabel) {
+            matched.push({
+              record: rec,
+              scenario: scenarios[s],
+              relKey: relKey
+            });
+            break;
+          }
+        }
+      }
+
+      return matched;
+    }
+
+    function renderHistoryList() {
+      var matched = findMatchingRecords();
+      historyListEl.innerHTML = '';
+
+      if (matched.length === 0) {
+        historyEmpty.style.display = 'block';
+        return;
+      }
+
+      historyEmpty.style.display = 'none';
+
+      var cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - RECENT_DAYS);
+
+      var recent = [];
+      for (var i = 0; i < matched.length; i++) {
+        if (new Date(matched[i].record.date) >= cutoff) {
+          recent.push(matched[i]);
+        }
+      }
+
+      recent.sort(function(a, b) { return b.record.id - a.record.id; });
+
+      var displayList = recent.length > 0 ? recent : [matched.reduce(function(a, b) {
+        return a.record.id > b.record.id ? a : b;
+      })];
+
+      for (var j = 0; j < displayList.length; j++) {
+        (function(item) {
+          var card = document.createElement('div');
+          card.className = 'record-card';
+
+          var dateStr = item.record.date;
+          var relName = RELATION_NAMES[item.relKey] || item.relKey;
+
+          card.innerHTML =
+            '<div class="record-title">' + dateStr + ' 冷静的自己</div>' +
+            '<div class="record-desc">录入于 ' + item.record.date + ' · 关系：' + relName + '</div>' +
+            '<button class="btn-compare">与此时的自己对照</button>';
+
+          historyListEl.appendChild(card);
+
+          card.querySelector('.btn-compare').addEventListener('click', function() {
+            showAnalysis(item);
+            var allBtns = document.querySelectorAll('.btn-compare');
+            for (var b = 0; b < allBtns.length; b++) {
+              allBtns[b].classList.remove('selected');
+            }
+            card.querySelector('.btn-compare').classList.add('selected');
+          });
+        })(displayList[j]);
+      }
+    }
+
+    function showAnalysis(item) {
+      var calmActions = item.scenario.actions || [];
+      var calmMessage = item.scenario.message || '';
+
+      var correctInput = getCorrectInput();
+      var currentActions = correctInput ? (correctInput.actions || []) : [];
+
+      var bothActions = [];
+      var currentOnlyActions = [];
+      var calmOnlyActions = [];
+
+      for (var a = 0; a < currentActions.length; a++) {
+        if (calmActions.indexOf(currentActions[a]) !== -1) {
+          bothActions.push(currentActions[a]);
+        } else {
+          currentOnlyActions.push(currentActions[a]);
+        }
+      }
+
+      for (var c = 0; c < calmActions.length; c++) {
+        if (currentActions.indexOf(calmActions[c]) === -1) {
+          calmOnlyActions.push(calmActions[c]);
+        }
+      }
+
+      analysisLabel.textContent = item.record.date + ' 冷静的自己 · 关系：' + RELATION_NAMES[item.relKey];
+
+      var lowerVal = item.scenario.dislikeLower;
+      var upperVal = item.scenario.dislikeUpper;
+      var vVal = correctInput ? correctInput.dislike_score : '?';
+      behaviorSummary.innerHTML =
+        '<span class="calm-line">' + item.record.date + ' 冷静的你：该情境下被讨厌可能性区间 <strong>' + lowerVal + '% - ' + upperVal + '%</strong></span>' +
+        '<br>' +
+        '<span class="current-line">此刻的你：被讨厌可能性 <strong>' + vVal + '%</strong></span>';
+
+      labelBoth.textContent = '你与冷静时的你都选择了（' + item.record.date + ' 冷静的你）';
+      labelCurrentOnly.textContent = '你现在选择了，但冷静时的你没有选择（' + item.record.date + ' 冷静的你）';
+      labelCalmOnly.textContent = '冷静时的你选择了，但你现在没有选择（' + item.record.date + ' 冷静的你）';
+
+      groupBothContent.innerHTML = '';
+      if (bothActions.length > 0) {
+        for (var i = 0; i < bothActions.length; i++) {
+          var div = document.createElement('div');
+          div.className = 'behavior-item both';
+          var text = '你和冷静时的你都选择了「' + bothActions[i] + '」';
+          if (calmMessage) {
+            text += '——冷静时的你留下的具体想法是：' + calmMessage;
+          } else {
+            text += '。';
+          }
+          div.innerHTML = '<div class="behavior-item-title">' + bothActions[i] + '</div>' +
+                          '<div class="behavior-item-text">' + text + '</div>';
+          groupBothContent.appendChild(div);
+        }
+      } else {
+        groupBothContent.innerHTML = '<div class="behavior-empty">没有重叠的行为倾向。</div>';
+      }
+
+      groupCurrentOnlyContent.innerHTML = '';
+      if (currentOnlyActions.length > 0) {
+        for (var j = 0; j < currentOnlyActions.length; j++) {
+          var div2 = document.createElement('div');
+          div2.className = 'behavior-item current-only';
+          div2.innerHTML =
+            '<div class="behavior-item-title">' + currentOnlyActions[j] + '</div>' +
+            '<div class="behavior-item-text">你现在想要「' + currentOnlyActions[j] + '」，但是冷静时的你似乎不认为这是个好选择。你是否需要再考虑一下？</div>';
+          groupCurrentOnlyContent.appendChild(div2);
+        }
+      } else {
+        groupCurrentOnlyContent.innerHTML = '<div class="behavior-empty">没有冲动型行为倾向。</div>';
+      }
+
+      groupCalmOnlyContent.innerHTML = '';
+      if (calmOnlyActions.length > 0) {
+        for (var k = 0; k < calmOnlyActions.length; k++) {
+          var div3 = document.createElement('div');
+          div3.className = 'behavior-item calm-only';
+          div3.innerHTML =
+            '<div class="behavior-item-title">' + calmOnlyActions[k] + '</div>' +
+            '<div class="behavior-item-text">冷静时的你认为可以「' + calmOnlyActions[k] + '」，但你此刻没有选择这个方向。</div>';
+          groupCalmOnlyContent.appendChild(div3);
+        }
+      } else {
+        groupCalmOnlyContent.innerHTML = '<div class="behavior-empty">没有遗漏的冷静期选择。</div>';
+      }
+
+      analysisArea.classList.add('visible');
+      setTimeout(function() {
+        analysisArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+
+      renderAnchors();
+    }
+
+    function getCurrentScenarioInfo() {
+      var situation = getCurrentSituation();
+      if (!situation) return null;
+      var relKey = getRelationKey(situation.relationship);
+      if (!relKey) return null;
+      var scenarioLabel = situation.self_perception + ' · ' + situation.other_behavior;
+      return { relKey: relKey, scenarioLabel: scenarioLabel };
+    }
+
+    function renderAnchors() {
+      var scenarioInfo = getCurrentScenarioInfo();
+      if (!scenarioInfo) {
+        anchorEmpty.innerHTML = '无法确定当前情境。';
+        anchorEmpty.style.display = 'block';
+        anchorArea.classList.add('visible');
+        return;
+      }
+
+      var anchors = getAnchorRecords();
+      anchorList.innerHTML = '';
+
+      var cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - ANCHOR_DAYS);
+
+      var filtered = [];
+      for (var i = 0; i < anchors.length; i++) {
+        var r = anchors[i];
+        if (!r.scenario_label) continue;
+        if (r.relationship !== scenarioInfo.relKey) continue;
+        if (r.scenario_label !== scenarioInfo.scenarioLabel) continue;
+        if (new Date(r.date) >= cutoff) {
+          filtered.push(r);
+        }
+      }
+
+      if (filtered.length === 0) {
+        var params = '?from=behavior&relationship=' + encodeURIComponent(scenarioInfo.relKey) +
+                     '&scenario=' + encodeURIComponent(scenarioInfo.scenarioLabel);
+        anchorEmpty.innerHTML =
+          '你还没有在这个情境下留下跨越时间的信。<br>' +
+          '<a href="anchor.html' + params + '" class="anchor-empty-link">去抛锚点写一封吧</a>';
+        anchorEmpty.style.display = 'block';
+        anchorArea.classList.add('visible');
+        return;
+      }
+
+      anchorEmpty.style.display = 'none';
+      filtered.sort(function(a, b) { return b.id - a.id; });
+
+      for (var j = 0; j < filtered.length; j++) {
+        var r = filtered[j];
+        var level = r.assessment_level || '未评估';
+        var levelText = LEVEL_LABELS[level] || '未评估';
+        var levelClass = LEVEL_LABELS[level] ? level : 'unknown';
+
+        var card = document.createElement('div');
+        card.className = 'anchor-card';
+
+        var d = new Date(r.date);
+        var dateDisplay = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + r.time;
+
+        card.innerHTML =
+          '<div class="anchor-meta">' +
+            '<span class="anchor-date">' + dateDisplay + '</span>' +
+            '<span class="anchor-level ' + levelClass + '">' +
+              '<span class="anchor-level-dot ' + levelClass + '"></span>' + levelText +
+            '</span>' +
+          '</div>' +
+          '<div class="anchor-content">' + escapeHTML(r.content) + '</div>';
+
+        anchorList.appendChild(card);
+      }
+
+      anchorArea.classList.add('visible');
+    }
+
+    function escapeHTML(str) {
+      var div = document.createElement('div');
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    renderHistoryList();
+  </script>
+</body>
+</html>

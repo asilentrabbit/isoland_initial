@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心理评估 - isoland</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 32px 24px 48px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      filter: grayscale(0.3);
+      opacity: 0.7;
+      line-height: 1;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-label {
+      font-size: 14px;
+      color: #555;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .scale-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #bbb;
+      margin-bottom: 22px;
+      padding: 0 2px;
+    }
+
+    .scale-legend span {
+      flex: 1;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .question {
+      margin-bottom: 22px;
+    }
+
+    .question:last-child {
+      margin-bottom: 0;
+    }
+
+    .question-text {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .q-number {
+      display: inline-block;
+      font-size: 12px;
+      color: #999;
+      margin-right: 6px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 50%;
+      background: #f0f0f0;
+      vertical-align: middle;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .option {
+      flex: 1;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .option input[type="radio"] {
+      display: none;
+    }
+
+    .option-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 2px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.25s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .option-label:hover {
+      background: #f0f0f0;
+    }
+
+    .option-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .option-circle::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.25s ease;
+    }
+
+    input[type="radio"]:checked + .option-label .option-circle {
+      border-color: #9e9e9e;
+      background: #9e9e9e;
+    }
+
+    input[type="radio"]:checked + .option-label .option-circle::after {
+      background: #fff;
+    }
+
+    .option-num {
+      font-size: 11px;
+      color: #aaa;
+      transition: color 0.25s ease;
+    }
+
+    input[type="radio"]:checked + .option-label .option-num {
+      color: #666;
+      font-weight: 500;
+    }
+
+    .form-disabled .option-label {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .form-disabled .option-label:hover {
+      background: transparent;
+    }
+
+    .submit-area {
+      text-align: center;
+      margin-top: 32px;
+      margin-bottom: 24px;
+    }
+
+    .btn-submit {
+      display: inline-block;
+      padding: 14px 56px;
+      font-size: 16px;
+      color: #aaa;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 30px;
+      cursor: not-allowed;
+      letter-spacing: 0.03em;
+      transition: all 0.35s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-submit.enabled {
+      color: #fff;
+      background: #9e9e9e;
+      cursor: pointer;
+    }
+
+    .btn-submit.enabled:hover {
+      background: #7e7e7e;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit.enabled:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-submit.submitted {
+      display: none;
+    }
+
+    .result-area {
+      display: none;
+      text-align: center;
+      padding-top: 20px;
+    }
+
+    .result-area.visible {
+      display: block;
+    }
+
+    .result-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .result-icon.green {
+      background: #e8f0e8;
+      color: #7a9a7a;
+    }
+
+    .result-icon.yellow {
+      background: #f0ece0;
+      color: #b0a070;
+    }
+
+    .result-icon.red {
+      background: #f0e6e6;
+      color: #b08080;
+    }
+
+    .result-level {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 20px;
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .result-text {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.9;
+      text-align: left;
+      padding: 0 8px;
+      margin-bottom: 28px;
+      white-space: pre-line;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 32px;
+      font-size: 14px;
+      color: #555;
+      background: #e8e8e8;
+      border: none;
+      border-radius: 30px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: all 0.35s ease;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn:hover {
+      background: #9e9e9e;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: #9e9e9e;
+    }
+
+    .btn.primary:hover {
+      background: #7e7e7e;
+    }
+
+    .result-note {
+      font-size: 12px;
+      color: #999;
+      line-height: 1.8;
+      margin-top: 7px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 40px;
+      padding-bottom: 20px;
+    }
+
+    .back-link a {
+      font-size: 13px;
+      color: #aaa;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .back-link a:hover {
+      color: #666;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 16px 40px;
+      }
+
+      .card {
+        padding: 20px 16px;
+        border-radius: 14px;
+      }
+
+      .header-title {
+        font-size: 19px;
+      }
+
+      .header-subtitle {
+        font-size: 13px;
+      }
+
+      .header-icon {
+        font-size: 30px;
+      }
+
+      .scale-legend {
+        font-size: 10px;
+      }
+
+      .question-text {
+        font-size: 14px;
+      }
+
+      .options {
+        gap: 2px;
+      }
+
+      .option-label {
+        padding: 6px 1px;
+      }
+
+      .option-circle {
+        width: 20px;
+        height: 20px;
+      }
+
+      .option-circle::after {
+        width: 8px;
+        height: 8px;
+      }
+
+      .option-num {
+        font-size: 10px;
+      }
+
+      .btn-submit {
+        padding: 12px 40px;
+        font-size: 15px;
+      }
+
+      .result-text {
+        font-size: 14px;
+      }
+
+      .btn {
+        padding: 10px 24px;
+        font-size: 13px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .header-title {
+        font-size: 24px;
+      }
+
+      .header-subtitle {
+        font-size: 15px;
+      }
+
+      .question-text {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 32px 36px;
+      }
+
+      .option-num {
+        font-size: 12px;
+      }
+
+      .btn-submit {
+        padding: 16px 64px;
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-icon">🕊️</div>
+      <h1 class="header-title">在进入 isoland 前，请先简单评估你的心理状态</h1>
+      <p class="header-subtitle">请根据你现在的真实感受作答，共10题</p>
+    </div>
+
+    <form id="assessmentForm">
+      <div class="card" id="sectionA">
+        <div class="section-label">社交感受评估</div>
+        <div class="scale-legend">
+          <span>1 完全不符合</span><span>2 不太符合</span><span>3 有点符合</span><span>4 比较符合</span><span>5 完全符合</span>
+        </div>
+      </div>
+
+      <div class="card" id="sectionB">
+        <div class="section-label">社交情境中的想法评估</div>
+      </div>
+
+      <div class="submit-area">
+        <button type="button" class="btn-submit" id="btnSubmit" disabled>提交评估</button>
+      </div>
+    </form>
+
+    <div class="card result-area" id="resultArea">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-level" id="resultLevel"></div>
+      <div class="result-text" id="resultText"></div>
+      <div class="result-actions" id="resultActions"></div>
+      <div class="result-note" id="resultNote"></div>
+    </div>
+
+    <div class="back-link">
+      <a href="index.html">返回欢迎页</a>
+    </div>
+  </div>
+
+  <script>
+    var SIAS_GREEN = 3.0;
+    var SIAS_RED = 4.5;
+    var CATASTROPHIZING_GREEN = 2.0;
+    var CATASTROPHIZING_RED = 4.0;
+
+    var questionsA = [
+      { id: 'A1', text: '我担心别人会觉得我的行为奇怪' },
+      { id: 'A2', text: '在社交场合中，我会感到紧张' },
+      { id: 'A3', text: '我害怕别人注意到我的紧张' },
+      { id: 'A4', text: '我担心别人对我不认可' },
+      { id: 'A5', text: '与人交谈时，我担心自己会说错话' },
+      { id: 'A6', text: '我担心别人在背后议论我' }
+    ];
+
+    var questionsB = [
+      { id: 'B1', text: '在与他人的互动中感到不安时，我会不由自主地想到最坏的结果' },
+      { id: 'B2', text: '我很容易把社交中的模糊信号往坏处想' },
+      { id: 'B3', text: '即使是一次很小的社交摩擦，我也会想象它演变成关系破裂' },
+      { id: 'B4', text: '当我不确定对方对我的看法时，我倾向于假设最糟糕的结局' }
+    ];
+
+    var allQuestions = questionsA.concat(questionsB);
+
+    function buildQuestionHTML(q) {
+      var opts = '';
+      for (var i = 1; i <= 5; i++) {
+        opts +=
+          '<div class="option">' +
+            '<input type="radio" name="' + q.id + '" value="' + i + '" id="' + q.id + '_' + i + '">' +
+            '<label class="option-label" for="' + q.id + '_' + i + '">' +
+              '<span class="option-circle"></span>' +
+              '<span class="option-num">' + i + '</span>' +
+            '</label>' +
+          '</div>';
+      }
+      return (
+        '<div class="question">' +
+          '<p class="question-text"><span class="q-number">' + q.id + '</span>' + q.text + '</p>' +
+          '<div class="options">' + opts + '</div>' +
+        '</div>'
+      );
+    }
+
+    var sectionA = document.getElementById('sectionA');
+    var sectionB = document.getElementById('sectionB');
+
+    questionsA.forEach(function(q) {
+      sectionA.insertAdjacentHTML('beforeend', buildQuestionHTML(q));
+    });
+
+    questionsB.forEach(function(q) {
+      sectionB.insertAdjacentHTML('beforeend', buildQuestionHTML(q));
+    });
+
+    var btnSubmit = document.getElementById('btnSubmit');
+    var resultArea = document.getElementById('resultArea');
+    var assessmentForm = document.getElementById('assessmentForm');
+
+    function getAllRadios() {
+      return document.querySelectorAll('#assessmentForm input[type="radio"]');
+    }
+
+    function checkAllAnswered() {
+      for (var i = 0; i < allQuestions.length; i++) {
+        var name = allQuestions[i].id;
+        var radios = document.querySelectorAll('#assessmentForm input[name="' + name + '"]');
+        var answered = false;
+        for (var j = 0; j < radios.length; j++) {
+          if (radios[j].checked) {
+            answered = true;
+            break;
+          }
+        }
+        if (!answered) return false;
+      }
+      return true;
+    }
+
+    function updateSubmitButton() {
+      if (checkAllAnswered()) {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.add('enabled');
+      } else {
+        btnSubmit.disabled = true;
+        btnSubmit.classList.remove('enabled');
+      }
+    }
+
+    var allRadios = getAllRadios();
+    for (var k = 0; k < allRadios.length; k++) {
+      allRadios[k].addEventListener('change', updateSubmitButton);
+    }
+
+    function getValue(name) {
+      var radios = document.querySelectorAll('#assessmentForm input[name="' + name + '"]');
+      for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) return parseInt(radios[i].value, 10);
+      }
+      return 0;
+    }
+
+    function calcAvg(ids) {
+      var sum = 0;
+      for (var i = 0; i < ids.length; i++) {
+        sum += getValue(ids[i]);
+      }
+      return parseFloat((sum / ids.length).toFixed(1));
+    }
+
+    function getLevel(siasAvg, catastrophizingAvg) {
+      if (siasAvg >= SIAS_RED || catastrophizingAvg >= CATASTROPHIZING_RED) return 'red';
+      if (siasAvg < SIAS_GREEN && catastrophizingAvg < CATASTROPHIZING_GREEN) return 'green';
+      return 'yellow';
+    }
+
+    function getLevelLabel(level) {
+      if (level === 'green') return '当前状态良好';
+      if (level === 'yellow') return '当前状态偏高';
+      return '当前状态需要关注';
+    }
+
+    function getLevelIcon(level) {
+      if (level === 'green') return '🕊️';
+      if (level === 'yellow') return '🌤️';
+      return '🌧️';
+    }
+
+    function scrollToResult() {
+      resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function disableAllQuestions() {
+      assessmentForm.classList.add('form-disabled');
+      var radios = getAllRadios();
+      for (var i = 0; i < radios.length; i++) {
+        radios[i].disabled = true;
+      }
+      btnSubmit.classList.add('submitted');
+    }
+
+    function showResult(level) {
+      var resultIcon = document.getElementById('resultIcon');
+      var resultLevel = document.getElementById('resultLevel');
+      var resultText = document.getElementById('resultText');
+      var resultActions = document.getElementById('resultActions');
+      var resultNote = document.getElementById('resultNote');
+
+      resultIcon.className = 'result-icon ' + level;
+      resultIcon.textContent = getLevelIcon(level);
+      resultLevel.textContent = getLevelLabel(level);
+
+      if (level === 'green') {
+        resultText.textContent = '你当前的状态适合进行理性判断。你可以进行认知对照，也可以更新你的社交判断信息。';
+        resultActions.innerHTML =
+          '<a href="mainwindow.html" class="btn primary">进入 isoland</a>';
+        resultNote.textContent = '';
+      } else if (level === 'yellow') {
+        resultText.textContent = '你当前的情绪状态偏高。系统暂不允许录入或修改判断数据，但你仍然可以进行认知对照——看看此刻的判断与冷静时有什么不同。';
+        resultActions.innerHTML =
+          '<a href="mainwindow.html" class="btn primary">进入 isoland</a>';
+        resultNote.innerHTML =
+          '如果你发现当前产品和类似方式效果不佳，且长期处于这种状态，同样可以考虑寻求专业的心理帮助。<br><br>' +
+          '录入和修改社交信息的功能将在你状态更平稳时开放。';
+      } else {
+        resultText.textContent =
+          '我们注意到了你的评估结果。你当前可能正处于比较难受的状态，抱抱你。\n\n' +
+          '很抱歉，这个产品目前的设计，可能还无法在你处于这样高的痛苦水平时提供有效的帮助。\n\n' +
+          '这不代表你的感受不重要，也不代表你无法走出来。只是现在的你需要的，可能是一个更有力量的支持系统——专业的心理咨询师。他们能在你非常困难的时候更好地帮助你。\n\n' +
+          '无论如何，请照顾好自己。';
+        resultActions.innerHTML = '';
+        resultNote.textContent = '';
+      }
+
+      resultArea.classList.add('visible');
+      setTimeout(scrollToResult, 100);
+    }
+
+    function saveAssessment(level) {
+      var now = new Date();
+      var record = {
+        level: level,
+        date: now.getFullYear() + '-' +
+              String(now.getMonth() + 1).padStart(2, '0') + '-' +
+              String(now.getDate()).padStart(2, '0'),
+        time: String(now.getHours()).padStart(2, '0') + ':' +
+              String(now.getMinutes()).padStart(2, '0')
+      };
+
+      var history = [];
+      try {
+        var stored = localStorage.getItem('assessment_history');
+        if (stored) {
+          history = JSON.parse(stored);
+        }
+      } catch (e) {}
+      history.push(record);
+      localStorage.setItem('assessment_history', JSON.stringify(history));
+
+      localStorage.setItem('current_assessment', JSON.stringify(record));
+      localStorage.setItem('assessment_completed', 'true');
+    }
+
+    btnSubmit.addEventListener('click', function() {
+      if (!checkAllAnswered()) return;
+
+      var siasAvg = calcAvg(questionsA.map(function(q) { return q.id; }));
+      var catastrophizingAvg = calcAvg(questionsB.map(function(q) { return q.id; }));
+      var level = getLevel(siasAvg, catastrophizingAvg);
+
+      saveAssessment(level);
+      disableAllQuestions();
+      showResult(level);
+    });
+  </script>
+</body>
+</html>

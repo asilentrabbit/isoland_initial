@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>产品介绍 - isoland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 24px 20px 48px;
+    }
+
+    .nav-back { margin-bottom: 32px; }
+
+    .nav-back a {
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .nav-back a:hover { color: #666; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header-title {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: #333;
+      letter-spacing: 0.04em;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      line-height: 2;
+      color: #555;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-emoji {
+      font-size: 28px;
+      line-height: 1;
+      filter: grayscale(0.3);
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+
+    .section-text p {
+      margin-bottom: 14px;
+    }
+
+    .section-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-text ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 14px;
+    }
+
+    .section-text ul li {
+      padding-left: 16px;
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .section-text ul li::before {
+      content: '·';
+      position: absolute;
+      left: 2px;
+      color: #999;
+    }
+
+    .section-text strong {
+      color: #444;
+      font-weight: 500;
+    }
+
+    .section-text em {
+      color: #666;
+      font-style: normal;
+      letter-spacing: 0.03em;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: #eee;
+      margin: 24px 0;
+    }
+
+    .bottom-link { text-align: center; margin-top: 28px; }
+
+    .bottom-link a {
+      font-size: 13px;
+      color: #bbb;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.3s ease;
+    }
+
+    .bottom-link a:hover { color: #888; }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px 14px 40px; }
+      .card { padding: 22px 16px; border-radius: 14px; font-size: 13px; }
+      .header-title { font-size: 21px; }
+      .section-title { font-size: 15px; }
+      .section-emoji { font-size: 24px; }
+    }
+
+    @media (min-width: 768px) {
+      .header-title { font-size: 26px; }
+      .card { padding: 32px 32px; font-size: 15px; }
+      .section-title { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-back">
+      <a href="index.html">← 返回欢迎页</a>
+    </div>
+
+    <div class="header">
+      <h1 class="header-title">isoland 产品介绍</h1>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span class="section-emoji">🕊️</span>
+        <span>一、设计初心</span>
+      </div>
+      <div class="section-text">
+        <p>我是一个在社交中容易陷入内耗的人。在我感到焦虑时，模糊的语气或变短的回复都会让我不受控制地认为对方讨厌我，而且想要做出冲动的行为。这种状态给我带来了很大的困扰——即使我渴望与人合作，也渴望与少数人建立深度联结，但社交信号的不确定性，让这个过程异常艰难。</p>
+        <p>我最喜欢的角色同样内敛、不善社交，虽然与我的困境并不一致，但他给了我"让冷静的自己救焦虑的自己"的设计灵感。</p>
+        <p>于是有了现在的，最简单的 isoland。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">二、目标用户群体</div>
+      <div class="section-text">
+        <p>isoland 面向的是这样一群人：</p>
+        <p>他们在在意的人面前，无法自动处理模糊的社交信号，容易陷入"ta是不是讨厌我"的反复内耗。他们并非没有社交动机——恰恰相反，他们渴望合作和深度联结。但在恐慌状态下，他们可能会坚信被对方讨厌了，并被恐惧驱动着做出一些事后让自己后悔的行为，比如反复追问对方是否讨厌自己、或莫名其妙地道歉。</p>
+        <p>如果你：</p>
+        <ul>
+          <li>在冷静时有着比较清晰的自我认知，能够坦诚地面对和分析自己的情绪</li>
+          <li>在焦虑时容易把事情往坏处想，别人安慰你对你的效果不是很好</li>
+          <li>在焦虑时会做出一些冲动的行为，事后又感到懊悔</li>
+          <li>不是完全不想社交，而是社交让你太累</li>
+        </ul>
+        <p>那么，你可能是 isoland 的用户。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">三、使用指南</div>
+      <div class="section-text">
+        <p>isoland 的使用分为两个阶段：冷静期录入，和恐慌期对照。</p>
+
+        <p><strong>冷静期 · 录入</strong></p>
+        <p>在你情绪平稳、能够理性思考且有一定耐心的时候，为你的社交关系建立判断模型。</p>
+        <p>1. 打开应用，完成情绪状态评估。系统会告诉你当前是否适合进行信息录入。</p>
+        <p>2. 为不同关系等级（至交好友、朋友、熟人/一般相识）设定判断基准。</p>
+        <p>3. 录入的内容包括：</p>
+        <ul>
+          <li>在某种想象的情境下，你估计对方讨厌你的可能性范围（如20%-40%）</li>
+          <li>你为自己预设的优先行为（"如果我觉得被讨厌，我应该先做什么"）</li>
+          <li>（可选）你留给未来恐慌的自己的提醒语，比如"上次你也觉得他讨厌你，后来发现他只是太忙"</li>
+        </ul>
+
+        <p><strong>恐慌期 · 对照</strong></p>
+        <p>当你再次陷入"ta是不是讨厌我"的焦虑时：</p>
+        <p>1. 完成情绪状态评估。系统会根据你当前的状态，决定开放哪些功能。</p>
+        <p>2. 进入认知对照。首先回答：你此刻认为，ta讨厌你的可能性有多大？在0-100的轴上拖动，画出你此刻认为对方讨厌你的可能性。同时回答多选题：你现在想要怎么做。</p>
+        <p>3. 提交后，回答三个问题：你与对方的关系是什么？你确定自己做错了什么吗？对方明确地疏远你了吗？</p>
+        <p>4. 系统会把你此刻的判断，与你冷静时录入的数据进行比对。首先进入可能性对照页面：展示你此刻估计的数值，与你冷静时录入的若干条类似情境下的判断数据，并给出分析——你此刻的估计，与冷静时的你有多大差距。</p>
+        <p>5. 进入下一个页面，进行行为对照：展示你此刻想做的事，与你冷静时为自己预设的行为方案。同时，展示过去180天内，你在冷静时写给自己的话。</p>
+
+        <div class="section-divider"></div>
+
+        <p><strong>重要提示</strong></p>
+        <p>isoland 的信息录入需要在情绪相对平稳的状态下使用。如果你在情绪评估中得分较高，系统会限制录入和修改功能。这不是拒绝你，是保护你冷静时为自己建立的判断模型。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">四、局限性与改进方向</div>
+      <div class="section-text">
+        <p><strong>当前版本的局限性</strong></p>
+        <p>1. 情绪门控量表的局限：系统使用的部分量表尚未完成正式汉化信效度验证，门控阈值为基于现有文献的初始建议值，准确性有待进一步校准。</p>
+        <p>2. 整体方法的科学性未经过验证：本产品主要基于设计者的个人洞察，整体方法的有效性尚未经过实证研究的检验。这只是一个很原始的灵感，而非成熟的心理干预方案。</p>
+        <p>3. 信息盲区：所有判断数据来自用户自己。系统无法获取互动对象的真实状态，所有输出都是"你冷静时如何看待此事"，而非"此事客观上是什么"。</p>
+        <p>4. 数据与算法处理的限制：目前无论是信息的收集维度，还是算法的处理能力，都处于非常初期的阶段。产品的分析深度和个性化程度有限。</p>
+        <p>5. 技术实现的不成熟：本产品是设计者使用 vibe coding 方式制作的非常初期、非常简单的程序，可能存在技术问题。且用户真的应用起来不一定特别方便。当前版本更适合作为概念验证和思路展示，而非稳定可靠的生产工具。</p>
+
+        <div class="section-divider"></div>
+
+        <p><strong>改进方向</strong></p>
+        <p>作为一个基于个人洞察与 vibe coding 制作的灵感项目，isoland 目前处于非常初期的阶段。它仅仅迈出了第一步——把"让冷静的自己，救焦虑的自己"这个想法，变成了可以触碰的产品雏形。</p>
+        <p>数据与算法：我将在短期扩展信息录入的维度与情境模板，并在中期尝试引入经过科学分析和统计得出的初始数据与更系统的认知对比算法，提升分析深度与个性化程度。</p>
+        <p>技术实现：后续会将项目迁移至更成熟的开发框架，重构代码并优化性能，逐步从一个粗糙的原型走向稳定可用的工具。</p>
+        <p>开源与共创：我会在完善基础版本后，将项目开源至公开平台。我期待感兴趣的了解些心理学知识的人、其他开发者或同样被社交内耗困扰的朋友参与进来——无论是提出修改建议、贡献代码，还是帮助验证量表和算法有效性。集体的智慧，或许能让一个小灵感慢慢长成真正有用的东西。如果你愿意加入，欢迎在项目仓库中与我联系。</p>
+      </div>
+    </div>
+
+    <div class="bottom-link">
+      <a href="index.html">返回欢迎页</a>
+    </div>
+  </div>
+
+  <script></script>
+</body>
+</html>
